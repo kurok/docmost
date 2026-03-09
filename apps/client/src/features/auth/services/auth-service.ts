@@ -51,3 +51,11 @@ export async function getCollabToken(): Promise<ICollabToken> {
   const req = await api.post<ICollabToken>("/auth/collab-token");
   return req.data;
 }
+
+export async function verifyEmail(data: { token: string }): Promise<void> {
+  await api.post("/auth/verify-email", data);
+}
+
+export async function resendVerificationEmail(data: { email: string }): Promise<void> {
+  await api.post("/auth/resend-verification", data);
+}

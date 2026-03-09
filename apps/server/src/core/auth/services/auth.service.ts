@@ -36,6 +36,7 @@ import {
   AUDIT_SERVICE,
   IAuditService,
 } from '../../../integrations/audit/audit.service';
+import { EnvironmentService } from '../../../integrations/environment/environment.service';
 
 @Injectable()
 export class AuthService {
@@ -46,6 +47,7 @@ export class AuthService {
     private userTokenRepo: UserTokenRepo,
     private mailService: MailService,
     private domainService: DomainService,
+    private environmentService: EnvironmentService,
     @InjectKysely() private readonly db: KyselyDB,
     @Inject(AUDIT_SERVICE) private readonly auditService: IAuditService,
   ) {}
@@ -67,6 +69,12 @@ export class AuthService {
 
     if (!isPasswordMatch) {
       throw new UnauthorizedException(errorMessage);
+    }
+
+    if (this.environmentService.isCloud() && !user.emailVerifiedAt) {
+      throw new BadRequestException(
+        'Please verify your email address. Check your inbox for the verification link.',
+      );
     }
 
     user.lastLoginAt = new Date();

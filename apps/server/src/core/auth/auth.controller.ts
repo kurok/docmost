@@ -189,6 +189,63 @@ export class AuthController {
     });
   }
 
+  @HttpCode(HttpStatus.OK)
+  @Post('verify-email')
+  async verifyEmail(
+    @Body() dto: VerifyUserTokenDto,
+    @AuthWorkspace() workspace: Workspace,
+    @Res({ passthrough: true }) res: FastifyReply,
+  ) {
+    if (!this.environmentService.isCloud()) {
+      return;
+    }
+
+    let CloudModule: any;
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      CloudModule = require('./../../ee/cloud/services/workspace.cloud.service');
+    } catch {
+      return;
+    }
+
+    const cloudService = this.moduleRef.get(
+      CloudModule.WorkspaceCloudService,
+      { strict: false },
+    );
+
+    const authToken = await cloudService.verifyEmail(
+      dto.token,
+      workspace.id,
+    );
+    this.setAuthCookie(res, authToken);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('resend-verification')
+  async resendVerification(
+    @Body() dto: ForgotPasswordDto,
+    @AuthWorkspace() workspace: Workspace,
+  ) {
+    if (!this.environmentService.isCloud()) {
+      return;
+    }
+
+    let CloudModule: any;
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      CloudModule = require('./../../ee/cloud/services/workspace.cloud.service');
+    } catch {
+      return;
+    }
+
+    const cloudService = this.moduleRef.get(
+      CloudModule.WorkspaceCloudService,
+      { strict: false },
+    );
+
+    await cloudService.resendVerificationEmail(dto.email, workspace.id);
+  }
+
   setAuthCookie(res: FastifyReply, token: string) {
     res.setCookie('authToken', token, {
       httpOnly: true,

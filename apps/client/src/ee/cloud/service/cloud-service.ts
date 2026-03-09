@@ -5,3 +5,7 @@ export async function getJoinedWorkspaces(): Promise<Partial<IWorkspace[]>> {
   const req = await api.post<Partial<IWorkspace[]>>("/workspace/joined");
   return req.data;
 }
+
+export async function findWorkspacesByEmail(email: string): Promise<void> {
+  await api.post("/workspace/find-by-email", { email });
+}

@@ -27,7 +27,7 @@ import APP_ROUTE, { getPostLoginRedirect } from "@/lib/app-route.ts";
 import { RESET } from "jotai/utils";
 import { useTranslation } from "react-i18next";
 import { isCloud } from "@/lib/config.ts";
-import { exchangeTokenRedirectUrl } from "@/ee/utils.ts";
+import { exchangeTokenRedirectUrl, getHostnameUrl } from "@/ee/utils.ts";
 
 export default function useAuth() {
   const { t } = useTranslation();
@@ -92,6 +92,17 @@ export default function useAuth() {
     try {
       if (isCloud()) {
         const res = await createWorkspace(data);
+
+        if (res?.requiresEmailVerification) {
+          const hostname = res?.workspace?.hostname;
+          if (hostname) {
+            window.location.href =
+              getHostnameUrl(hostname) +
+              `/verify-email?email=${encodeURIComponent(data.email)}`;
+          }
+          return;
+        }
+
         const hostname = res?.workspace?.hostname;
         const exchangeToken = res?.exchangeToken;
         if (hostname && exchangeToken) {
