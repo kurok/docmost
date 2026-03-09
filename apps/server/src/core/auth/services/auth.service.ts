@@ -255,6 +255,14 @@ export class AuthService {
       template: emailTemplate,
     });
 
+    if (this.environmentService.isCloud() && !user.emailVerifiedAt) {
+      await this.userRepo.updateUser(
+        { emailVerifiedAt: new Date() },
+        user.id,
+        workspace.id,
+      );
+    }
+
     // Check if user has MFA enabled or workspace enforces MFA
     const userHasMfa = user?.['mfa']?.isEnabled || false;
     const workspaceEnforcesMfa = workspace.enforceMfa || false;
