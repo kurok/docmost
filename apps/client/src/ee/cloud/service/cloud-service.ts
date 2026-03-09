@@ -9,3 +9,11 @@ export async function getJoinedWorkspaces(): Promise<Partial<IWorkspace[]>> {
 export async function findWorkspacesByEmail(email: string): Promise<void> {
   await api.post("/workspace/find-by-email", { email });
 }
+
+export async function verifyEmail(data: { token: string }): Promise<void> {
+  await api.post("/workspace/verify-email", data);
+}
+
+export async function resendVerificationEmail(data: { email: string }): Promise<void> {
+  await api.post("/workspace/resend-verification", data);
+}

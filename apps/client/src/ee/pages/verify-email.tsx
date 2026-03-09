@@ -5,7 +5,7 @@ import classes from "../../features/auth/components/auth.module.css";
 import {
   verifyEmail,
   resendVerificationEmail,
-} from "@/features/auth/services/auth-service.ts";
+} from "@/ee/cloud/service/cloud-service.ts";
 import { notifications } from "@mantine/notifications";
 import APP_ROUTE from "@/lib/app-route.ts";
 import { useTranslation } from "react-i18next";
