@@ -52,9 +52,17 @@ export default function useAuth() {
       }
     } catch (err) {
       setIsLoading(false);
-      console.log(err);
+
+      const message = err.response?.data?.message;
+      if (isCloud() && message?.includes("verify your email")) {
+        navigate(
+          `${APP_ROUTE.AUTH.VERIFY_EMAIL}?email=${encodeURIComponent(data.email)}`,
+        );
+        return;
+      }
+
       notifications.show({
-        message: err.response?.data.message,
+        message,
         color: "red",
       });
     }
